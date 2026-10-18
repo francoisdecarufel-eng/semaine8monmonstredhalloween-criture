@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mon Monstre d'Halloween - Français 4e année</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- Configuration de la typographie et des fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- ⚠️ RÈGLE BABEL OBLIGATOIRE -->
+  <script>
+    Babel.registerPreset('react-classic', {
+      presets: [
+        [Babel.availablePresets['react'], { runtime: 'classic' }]
+      ]
+    });
+  </script>
+
+  <!-- Configuration Tailwind sur mesure épurée & aérée -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['Fredoka', 'sans-serif'],
+            body: ['Nunito', 'sans-serif'],
+          },
+          colors: {
+            spooky: {
+              50: '#fcf8ff',
+              100: '#f3e8ff',
+              200: '#e9d5ff',
+              700: '#581c87',
+              800: '#3b0764',
+              900: '#1e0538',
+              dark: '#120323',
+            },
+            pumpkin: {
+              300: '#ffedd5',
+              400: '#fb923c',
+              500: '#f97316',
+              600: '#ea580c',
+            },
+            slime: {
+              100: '#dcfce7',
+              400: '#4ade80',
+              500: '#22c55e',
+              600: '#16a34a',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Nunito', sans-serif;
+      background-color: #120323;
+      color: #f3e8ff;
+    }
+    .font-display {
+      font-family: 'Fredoka', sans-serif;
+    }
+    /* Scrollbar douce et aérée */
+    ::-webkit-scrollbar {
+      width: 12px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #1e0538;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #a855f7;
+      border-radius: 6px;
+      border: 3px solid #1e0538;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #f97316;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-spooky-dark text-slate-100 antialiased selection:bg-pumpkin-500 selection:text-white">
+
+  <div id="root"></div>
+
+  <script type="text/babel" data-presets="react-classic">
+    const { useState } = React;
+
+    // Streamlined SVG Icons
+    const IconGhost = () => (
+      <svg className="w-6 h-6 inline-block" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M9 10h.01M15 10h.01M12 2a8 8 0 0 0-8 8v11l3-3 3 3 3-3 3 3 3-3V10a8 8 0 0 0-8-8z"/>
+      </svg>
+    );
+
+    const IconCopy = () => (
+      <svg className="w-5 h-5 inline-block" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+      </svg>
+    );
+
+    const IconCheck = () => (
+      <svg className="w-5 h-5 inline-block text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+    );
+
+    const IconPumpkin = () => (
+      <svg className="w-7 h-7 inline-block" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 2v3M12 22a9 9 0 0 1-9-9c0-3 2-6 5-7a9 9 0 0 1 8 0c3 1 5 4 5 7a9 9 0 0 1-9 9z"/>
+        <path d="M9 10v1M15 10v1M10 15c.5.5 1.5 1 2 1s1.5-.5 2-1"/>
+      </svg>
+    );
+
+    const IconBook = () => (
+      <svg className="w-6 h-6 inline-block" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+      </svg>
+    );
+
+    const IconCheckList = () => (
+      <svg className="w-6 h-6 inline-block" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="4" width="18" height="16" rx="2"/>
+        <path d="m9 12 2 2 4-4"/>
+      </svg>
+    );
+
+    const IconSparkles = () => (
+      <svg className="w-6 h-6 inline-block text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3z"/>
+      </svg>
+    );
+
+    const IconSearch = () => (
+      <svg className="w-5 h-5 inline-block text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="11" cy="11" r="8"/>
+        <path d="m21 21-4.3-4.3"/>
+      </svg>
+    );
+
+    const IconTrash = () => (
+      <svg className="w-5 h-5 inline-block" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+      </svg>
+    );
+
+    const modelisationSteps = [
+      {
+        id: 1,
+        title: "Partie 1 : Physique et Caractère",
+        instruction: "Quelle idée décrit le mieux l'apparence et le caractère du monstre ?",
+        options: [
+          {
+            id: 'a',
+            text: "C'est un petit monstre brun qui ressemble à un arbre avec des yeux jaunes et il est très méchant.",
+            feedback: "🔴 Un peu trop simple. Les adjectifs manquent de variété et de précision.",
+            isBest: false
+          },
+          {
+            id: 'b',
+            text: "Sa peau est faite d'écorce d'érable rugueuse couverte de mousse verte. Ses cheveux sont des branches tordues avec de petites feuilles oranges. Ses yeux ressemblent à deux gouttes de sève dorée qui brillent dans le noir. Il est doux et très timide.",
+            feedback: "🟢 EXCELLENT ! Cette proposition donne une image très claire et poétique au lecteur.",
+            isBest: true
+          },
+          {
+            id: 'c',
+            text: "Il a des bras en bois. Ses yeux sont grands. Il fait du bruit quand il marche dans la forêt.",
+            feedback: "🟡 Passable, mais il manque des adjectifs enrichissants.",
+            isBest: false
+          }
+        ]
+      },
+      {
+        id: 2,
+        title: "Partie 2 : L'Habitat",
+        instruction: "Quelle proposition décrit le mieux le lieu de vie de ce monstre d'arbre ?",
+        options: [
+          {
+            id: 'a',
+            text: "Il vit au plus profond d'une forêt d'automne. Le sol y est recouvert d'un épais tapis de feuilles mortes et humides. Il s'abrite directement contre les troncs des grands arbres pour se cacher.",
+            feedback: "🟢 PARFAIT ! L'ambiance est bien décrite et l'abri est parfaitement cohérent.",
+            isBest: true
+          },
+          {
+            id: 'b',
+            text: "Il habite dans une maison abandonnée en ville avec des fenêtres cassées.",
+            feedback: "🔴 Un monstre fait d'écorce d'arbre vit plutôt dans la forêt !",
+            isBest: false
+          },
+          {
+            id: 'c',
+            text: "Il vit dans les bois sous des feuilles avec d'autres animaux.",
+            feedback: "🟡 C'est court. Il manque des détails sur l'atmosphère du lieu.",
+            isBest: false
+          }
+        ]
+      },
+      {
+        id: 3,
+        title: "Partie 3 : L'Alimentation",
+        instruction: "Choisissez la meilleure idée pour l'alimentation de ce monstre végétal.",
+        options: [
+          {
+            id: 'a',
+            text: "Il mange des hamburgers fait avec des feuilles et boit du jus de fruit.",
+            feedback: "🔴 Trop ordinaire pour une créature fantastique faite d'écorce !",
+            isBest: false
+          },
+          {
+            id: 'b',
+            text: "Il se nourrit des rayons de soleil qui passent à travers les feuilles. Il boit les petites gouttes de rosée le matin et grignote des glands de chêne et des noisettes sauvages.",
+            feedback: "🟢 MAGNIFIQUE ! Cela s'accorde très bien avec sa nature végétale.",
+            isBest: true
+          },
+          {
+            id: 'c',
+            text: "Il trouve des insectes et mange des graines dans la forêt.",
+            feedback: "🟡 Correct, mais la nourriture magique (rosée et rayons de soleil) est plus originale.",
+            isBest: false
+          }
+        ]
+      }
+    ];
+
+    const modelTextData = {
+      title: "L'Écorceux des bois",
+      wordCount: 152,
+      paragraphs: [
+        {
+          id: "p1",
+          section: "Physique et Caractère",
+          accentColor: "border-pumpkin-500 bg-pumpkin-500/10 text-pumpkin-400",
+          text: "On dit souvent que les monstres sont de redoutables créatures. Je vous présente un monstre bien particulier qui hante mes rêves la nuit : L'Écorceux des bois ! Sa peau est faite d'écorce d'érable rugueuse couverte de mousse verte. Ses cheveux forment un buisson de branches tordues garnies de petites feuilles oranges. Ses yeux ressemblent à deux grandes gouttes de sève dorée qui brillent dans le noir. Son corps est petit et trapu, comme une souche d'arbre vivante. Lorsqu'il se déplace, il produit un bruit de bois sec qui craque. Malgré son apparence étrange, c'est un être doux et très timide.",
+          keywords: ["L'Écorceux des bois", "écorce d'érable rugueuse", "mousse verte", "branches tordues", "sève dorée", "timide"]
+        },
+        {
+          id: "p2",
+          section: "Habitat",
+          accentColor: "border-purple-500 bg-purple-500/10 text-purple-300",
+          text: "Ce curieux monstre vit au plus profond d'une forêt d'automne. Le sol y est recouvert d'un épais tapis de feuilles mortes et humides. Pour dormir en sécurité, il s'abrite directement contre les troncs des grands arbres afin de se cacher des regards curieux.",
+          keywords: ["forêt d'automne", "tapis de feuilles mortes", "troncs des grands arbres"]
+        },
+        {
+          id: "p3",
+          section: "Alimentation",
+          accentColor: "border-slime-500 bg-slime-500/10 text-slime-400",
+          text: "Pour faire le plein d'énergie, l'Écorceux se nourrit des doux rayons de soleil qui traversent les feuillages. Chaque matin, il boit les petites gouttes de rosée accrochées aux plantes. Pour le dessert, il grignote de délicieux glands de chêne et des noisettes sauvages.",
+          keywords: ["rayons de soleil", "gouttes de rosée", "glands de chêne"]
+        }
+      ]
+    };
+
+    const lexiconCategories = [
+      {
+        id: "p1",
+        title: "👁️ Partie 1 : Physique et Caractère",
+        sections: [
+          {
+            subtitle: "Apparence physique",
+            items: [
+              { label: "Noms", words: ["Des crocs", "Des yeux", "Des griffes", "La peau", "Des tentacules", "Des ailes"] },
+              { label: "Adjectifs", words: ["Acérés", "Globuleux", "Phosphorescents", "Gluant", "Visqueux", "Rugueux"] },
+              { label: "Verbes", words: ["Grincer des dents", "Cligner des yeux", "Muer", "Se contorsionner", "Battre des ailes"] },
+              { label: "Couleurs originales", words: ["Vert bave", "Violet ténébreux", "Rouge braise", "Noir corbeau", "Jaune fluorescent"] }
+            ]
+          },
+          {
+            subtitle: "Caractère et Comportement",
+            items: [
+              { label: "Qualités / Défauts", words: ["Farceur", "Malicieux", "Timide", "Peureux", "Grognon", "Gourmand", "Curieux"] },
+              { label: "Comportements", words: ["Aime faire des tours", "Se cache au moindre bruit", "S'énerve pour un rien", "Pose mille questions"] },
+              { label: "Verbes d'expression", words: ["Grogner", "Grommeler", "Chuchoter", "Murmurer", "Hurler", "Ricaner"] }
+            ]
+          }
+        ]
+      },
+      {
+        id: "p2",
+        title: "🏚️ Partie 2 : L'Habitat",
+        sections: [
+          {
+            subtitle: "Lieux de résidence",
+            items: [
+              { label: "À l'intérieur", words: ["Un manoir abandonné", "Un grenier poussiéreux", "Une cave humide", "Sous un lit grinçant"] },
+              { label: "Dans la nature", words: ["Un marais mystérieux", "Une grotte sombre", "Une forêt maudite", "Le creux d'un arbre centenaire"] }
+            ]
+          },
+          {
+            subtitle: "Vocabulaire pour enrichir le lieu",
+            items: [
+              { label: "Noms & Adjectifs", words: ["Toiles d'araignée", "Brouillard", "Brume", "Ombres chinoises", "Sombre", "Inquiétant", "Poussiéreux"] },
+              { label: "Expressions clés", words: ["Au fond d'un marais...", "Caché dans l'ombre...", "Au cœur de la forêt..."] }
+            ]
+          }
+        ]
+      },
+      {
+        id: "p3",
+        title: "🧪 Partie 3 : L'Alimentation",
+        sections: [
+          {
+            subtitle: "Plats et Ingrédients magiques",
+            items: [
+              { label: "Gluants & Visqueux", words: ["Soupe de bave de crapaud", "Purée de vers de terre", "Gelée de méduse toxique"] },
+              { label: "Croquants & Friandises", words: ["Brochettes d'ongles de sorcière", "Araignées croustillantes", "Bonbons périmés"] },
+              { label: "Boissons", words: ["Jus de chaussettes puantes", "Rosée du matin empoisonnée", "Élixir de nuit"] }
+            ]
+          },
+          {
+            subtitle: "Façon de manger",
+            items: [
+              { label: "Verbes d'action", words: ["Dévorer", "Engloutir", "Ronger", "Mâchonner", "Siroter", "Laper"] },
+              { label: "Textures et Goûts", words: ["Croustillant", "Gluant", "Visqueux", "Puant", "Épicé", "Savoureux"] }
+            ]
+          }
+        ]
+      }
+    ];
+
+    function App() {
+      const [introDismissed, setIntroDismissed] = useState(false);
+      const [activeTab, setActiveTab] = useState(0);
+
+      // Onglet 1 State
+      const [stepIdx, setStepIdx] = useState(0);
+      const [selectedOption, setSelectedOption] = useState(null);
+      const [stepFeedback, setStepFeedback] = useState(null);
+      const [chosenIdeas, setChosenIdeas] = useState({});
+      const [modelisationComplete, setModelisationComplete] = useState(false);
+
+      // Onglet 3 State
+      const [accordPractice, setAccordPractice] = useState({ q1: '', q2: '', q3: '' });
+      const [accordFeedback, setAccordFeedback] = useState(null);
+
+      // Onglet 4 State
+      const [wordBasket, setWordBasket] = useState([]);
+      const [searchQuery, setSearchQuery] = useState('');
+      const [copied, setCopied] = useState(false);
+
+      const handleCopyWords = () => {
+        if (wordBasket.length === 0) return;
+        const textToCopy = wordBasket.join(', ');
+        
+        // Configuration de l'événement Clipboard pour forcer la couleur noire explicite
+        const handleCopyEvent = (e) => {
+          e.preventDefault();
+          // Version texte brut (standard, s'adapte à la couleur du texte du document receveur)
+          e.clipboardData.setData('text/plain', textToCopy);
+          
+          // Version HTML riche avec styles inline stricts (force le texte noir #000000 sans fond)
+          const htmlFormatted = `<span style="color: #000000 !important; background-color: #ffffff !important; font-family: Arial, sans-serif; font-size: 12pt;">${textToCopy}</span>`;
+          e.clipboardData.setData('text/html', htmlFormatted);
+        };
+
+        document.addEventListener('copy', handleCopyEvent);
+
+        try {
+          // Exécution de la commande de copie
+          document.execCommand('copy');
+          setCopied(true);
+          setTimeout(() => setCopied(false), 2500);
+        } catch (err) {
+          console.error('Erreur lors de la copie', err);
+        } finally {
+          document.removeEventListener('copy', handleCopyEvent);
+        }
+      };
+
+      const handleSelectOption = (option) => {
+        setSelectedOption(option.id);
+        setStepFeedback(option.feedback);
+        if (option.isBest) {
+          setChosenIdeas(prev => ({ ...prev, [modelisationSteps[stepIdx].id]: option.text }));
+        }
+      };
+
+      const handleNextStep = () => {
+        if (stepIdx < modelisationSteps.length - 1) {
+          setStepIdx(prev => prev + 1);
+          setSelectedOption(null);
+          setStepFeedback(null);
+        } else {
+          setModelisationComplete(true);
+        }
+      };
+
+      const resetModelisation = () => {
+        setStepIdx(0);
+        setSelectedOption(null);
+        setStepFeedback(null);
+        setChosenIdeas({});
+        setModelisationComplete(false);
+      };
+
+      const addWord = (w) => {
+        if (!wordBasket.includes(w)) setWordBasket([...wordBasket, w]);
+      };
+
+      const removeWord = (w) => {
+        setWordBasket(wordBasket.filter(item => item !== w));
+      };
+
+      const checkAccords = () => {
+        if (accordPractice.q1 === 'vertes' && accordPractice.q2 === 'pointues' && accordPractice.q3 === 'mystérieuse') {
+          setAccordFeedback({ type: 'success', text: '🎉 Bravo ! Tous tes accords dans le groupe du nom sont parfaits !' });
+        } else {
+          setAccordFeedback({ type: 'error', text: '🔴 Attention aux accords ! L\'adjectif doit s\'accorder en genre (m/f) et en nombre (s/p) avec le nom.' });
+        }
+      };
+
+      return (
+        <div className="min-h-screen flex flex-col font-body bg-spooky-dark text-slate-100">
+          
+          {/* HEADER AÉRÉ ET ÉPURÉ */}
+          <header className="bg-spooky-900/90 border-b border-spooky-800 backdrop-blur-md sticky top-0 z-50 px-6 py-4 shadow-xl">
+            <div className="max-w-6xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-4">
+              
+              <div className="flex items-center space-x-4">
+                <div className="p-3 bg-pumpkin-500/20 border border-pumpkin-500/50 rounded-2xl text-pumpkin-400">
+                  <IconPumpkin />
+                </div>
+                <div>
+                  <h1 className="text-2xl md:text-3xl font-display font-bold text-white tracking-wide">
+                    Mon monstre d'Halloween
+                  </h1>
+                  <p className="text-sm text-spooky-200">
+                    Français 4e année • Texte Descriptif & Syntaxe
+                  </p>
+                </div>
+              </div>
+
+              {/* TABS DE NAVIGATION SPACIEUX */}
+              <nav className="flex flex-wrap justify-center gap-2">
+                {[
+                  { id: 0, title: "1. Modélisation", icon: <IconSparkles /> },
+                  { id: 1, title: "2. Texte Modèle (A)", icon: <IconBook /> },
+                  { id: 2, title: "3. Critères & Outils", icon: <IconCheckList /> },
+                  { id: 3, title: "4. Boîte à mots", icon: <IconGhost /> }
+                ].map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`flex items-center space-x-2 px-5 py-3 rounded-2xl font-display font-semibold text-base transition-all duration-200 ${
+                      activeTab === tab.id
+                        ? 'bg-pumpkin-500 text-white shadow-lg shadow-pumpkin-500/20 scale-105'
+                        : 'bg-spooky-800/60 text-spooky-200 hover:bg-spooky-800 hover:text-white'
+                    }`}
+                  >
+                    {tab.icon}
+                    <span>{tab.title}</span>
+                  </button>
+                ))}
+              </nav>
+
+            </div>
+          </header>
+
+          {/* MAIN CONTAINER */}
+          <main className="flex-1 max-w-5xl w-full mx-auto px-6 py-8 space-y-8">
+
+            {/* MESSAGE D'ACCUEIL SIMPLE ET AÉRÉ */}
+            {!introDismissed && (
+              <div className="bg-gradient-to-br from-spooky-900 to-spooky-800 border border-pumpkin-500/40 rounded-3xl p-8 md:p-10 shadow-2xl relative overflow-hidden space-y-6">
+                
+                <div className="space-y-3">
+                  <span className="inline-block px-4 py-1.5 bg-pumpkin-500/20 border border-pumpkin-500/40 text-pumpkin-400 font-display font-bold rounded-full text-sm">
+                    ✨ Créons notre créature ensemble !
+                  </span>
+                  <h2 className="text-3xl md:text-4xl font-display font-bold text-white">
+                    Bonjour la classe ! 👋
+                  </h2>
+                </div>
+
+                <p className="text-lg md:text-xl text-slate-200 leading-relaxed max-w-3xl">
+                  Aujourd'hui, nous allons écrire le texte descriptif de notre monstre d'Halloween. Notre objectif : <span className="text-pumpkin-400 font-bold">donner assez d'informations pour qu'un lecteur puisse l'imaginer sans le voir</span>.
+                </p>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-base text-slate-300 pt-2">
+                  <div className="flex items-center space-x-3 p-4 bg-spooky-900/60 rounded-2xl border border-spooky-800">
+                    <span className="text-pumpkin-400 font-bold text-xl">✔</span>
+                    <span>Construire des super phrases</span>
+                  </div>
+                  <div className="flex items-center space-x-3 p-4 bg-spooky-900/60 rounded-2xl border border-spooky-800">
+                    <span className="text-pumpkin-400 font-bold text-xl">✔</span>
+                    <span>Respecter les critères d'écriture</span>
+                  </div>
+                  <div className="flex items-center space-x-3 p-4 bg-spooky-900/60 rounded-2xl border border-spooky-800">
+                    <span className="text-pumpkin-400 font-bold text-xl">✔</span>
+                    <span>Utiliser un vocabulaire précis</span>
+                  </div>
+                  <div className="flex items-center space-x-3 p-4 bg-spooky-900/60 rounded-2xl border border-spooky-800">
+                    <span className="text-pumpkin-400 font-bold text-xl">✔</span>
+                    <span>Corriger les groupes du nom (GN)</span>
+                  </div>
+                </div>
+
+                <div className="pt-4">
+                  <button
+                    onClick={() => setIntroDismissed(true)}
+                    className="w-full md:w-auto px-10 py-4 bg-pumpkin-500 hover:bg-pumpkin-600 text-white font-display font-bold text-xl rounded-2xl shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
+                  >
+                    🚀 Commencer l'activité !
+                  </button>
+                </div>
+
+              </div>
+            )}
+
+            {/* ========================================================= */}
+            {/* ONGLET 4 : BOÎTE À MOTS ÉPURÉE ET AÉRÉE                   */}
+            {/* ========================================================= */}
+            {activeTab === 3 && (
+              <section className="space-y-8">
+                
+                {/* En-tête de la boîte à mots avec cases pâles et texte noir */}
+                <div className="bg-slate-100 border border-slate-300 rounded-3xl p-8 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                  <div>
+                    <h2 className="text-3xl font-display font-bold text-pumpkin-700">
+                      🎃 Lexique pour la création d'un monstre
+                    </h2>
+                    <p className="text-slate-700 text-base mt-1 font-medium">
+                      Clique sur les mots enrichis pour les ajouter à ton panier d'écriture.
+                    </p>
+                  </div>
+
+                  {/* Search input */}
+                  <div className="relative w-full md:w-72">
+                    <input
+                      type="text"
+                      placeholder="Chercher un mot..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full pl-11 pr-4 py-3 bg-white border border-slate-300 rounded-2xl text-slate-900 font-semibold placeholder-slate-400 focus:outline-none focus:border-pumpkin-500 shadow-sm"
+                    />
+                    <span className="absolute left-4 top-3.5">
+                      <IconSearch />
+                    </span>
+                  </div>
+                </div>
+
+                {/* PANIER DE MOTS SÉLECTIONNÉS AVEC CASES PÂLES ET MOTS EN NOIR */}
+                {wordBasket.length > 0 && (
+                  <div className="bg-amber-50 border-2 border-pumpkin-400 rounded-3xl p-6 shadow-xl space-y-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-amber-200 pb-3">
+                      <h3 className="font-display font-bold text-pumpkin-800 text-xl flex items-center gap-2">
+                        <span>🧺 Mon panier de rédaction ({wordBasket.length} {wordBasket.length > 1 ? 'mots' : 'mot'})</span>
+                      </h3>
+                      
+                      <div className="flex items-center space-x-3">
+                        <button
+                          onClick={handleCopyWords}
+                          className={`px-5 py-2.5 rounded-xl font-display font-bold text-sm flex items-center space-x-2 transition-all duration-200 ${
+                            copied
+                              ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/30'
+                              : 'bg-pumpkin-600 hover:bg-pumpkin-700 text-white shadow-lg shadow-pumpkin-600/20 active:scale-95'
+                          }`}
+                        >
+                          {copied ? <IconCheck /> : <IconCopy />}
+                          <span>{copied ? 'Mots copiés !' : 'Copier mes mots'}</span>
+                        </button>
+
+                        <button
+                          onClick={() => setWordBasket([])}
+                          className="p-2.5 text-rose-600 hover:bg-rose-100 rounded-xl transition-colors flex items-center space-x-1 text-xs font-bold"
+                          title="Vider le panier"
+                        >
+                          <IconTrash />
+                          <span className="hidden md:inline">Vider</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      {wordBasket.map((w, idx) => (
+                        <span
+                          key={idx}
+                          className="px-4 py-2 bg-white border-2 border-pumpkin-400 text-slate-900 font-bold text-base rounded-2xl flex items-center space-x-2 shadow-sm"
+                        >
+                          <span className="text-black">{w}</span>
+                          <button
+                            onClick={() => removeWord(w)}
+                            className="text-rose-600 hover:text-rose-800 font-bold ml-2 text-lg leading-none"
+                          >
+                            ×
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* CATEGORIES DE MOTS - CASES PÂLES ET TEXTE EN NOIR */}
+                <div className="space-y-8">
+                  {lexiconCategories.map((cat) => (
+                    <div key={cat.id} className="bg-slate-100 border border-slate-300 rounded-3xl p-8 shadow-xl space-y-6">
+                      <h3 className="text-2xl font-display font-bold text-pumpkin-800 border-b border-slate-300 pb-4">
+                        {cat.title}
+                      </h3>
+
+                      <div className="space-y-6">
+                        {cat.sections.map((sec, secIdx) => (
+                          <div key={secIdx} className="space-y-4">
+                            <h4 className="font-display font-bold text-lg text-purple-900">
+                              {sec.subtitle}
+                            </h4>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              {sec.items.map((item, itemIdx) => (
+                                <div key={itemIdx} className="p-5 bg-white rounded-2xl border border-slate-300 space-y-3 shadow-sm">
+                                  <span className="font-bold text-pumpkin-700 text-sm block">
+                                    {item.label} :
+                                  </span>
+                                  <div className="flex flex-wrap gap-2">
+                                    {item.words
+                                      .filter(w => w.toLowerCase().includes(searchQuery.toLowerCase()))
+                                      .map((w, wIdx) => (
+                                        <button
+                                          key={wIdx}
+                                          onClick={() => addWord(w)}
+                                          className="px-3.5 py-1.5 bg-slate-100 hover:bg-pumpkin-100 hover:border-pumpkin-500 text-slate-900 font-bold text-sm rounded-xl border border-slate-300 transition-all duration-150 shadow-xs"
+                                        >
+                                          + <span className="text-black">{w}</span>
+                                        </button>
+                                      ))}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                    </div>
+                  ))}
+                </div>
+
+              </section>
+            )}
+
+          </main>
+
+          {/* FOOTER SIMPLE ET DISCRET */}
+          <footer className="mt-auto py-8 text-center text-sm text-spooky-200 border-t border-spooky-800/50">
+            <p>Mon monstre d'Halloween • PFEQ 4e année • Enseignement du texte descriptif</p>
+          </footer>
+
+        </div>
+      );
+    }
+
+    ReactDOM.render(<App />, document.getElementById('root'));
+  </script>
+</body>
+</html>
