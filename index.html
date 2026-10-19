@@ -48,6 +48,8 @@
               400: '#fb923c',
               500: '#f97316',
               600: '#ea580c',
+              700: '#c2410c',
+              800: '#9a3412',
             },
             slime: {
               100: '#dcfce7',
@@ -238,21 +240,21 @@
       paragraphs: [
         {
           id: "p1",
-          section: "Physique et Caractère",
+          section: "Partie 1 : Description physique et traits de caractère",
           accentColor: "border-pumpkin-500 bg-pumpkin-500/10 text-pumpkin-400",
           text: "On dit souvent que les monstres sont de redoutables créatures. Je vous présente un monstre bien particulier qui hante mes rêves la nuit : L'Écorceux des bois ! Sa peau est faite d'écorce d'érable rugueuse couverte de mousse verte. Ses cheveux forment un buisson de branches tordues garnies de petites feuilles oranges. Ses yeux ressemblent à deux grandes gouttes de sève dorée qui brillent dans le noir. Son corps est petit et trapu, comme une souche d'arbre vivante. Lorsqu'il se déplace, il produit un bruit de bois sec qui craque. Malgré son apparence étrange, c'est un être doux et très timide.",
           keywords: ["L'Écorceux des bois", "écorce d'érable rugueuse", "mousse verte", "branches tordues", "sève dorée", "timide"]
         },
         {
           id: "p2",
-          section: "Habitat",
+          section: "Partie 2 : L'Habitat",
           accentColor: "border-purple-500 bg-purple-500/10 text-purple-300",
           text: "Ce curieux monstre vit au plus profond d'une forêt d'automne. Le sol y est recouvert d'un épais tapis de feuilles mortes et humides. Pour dormir en sécurité, il s'abrite directement contre les troncs des grands arbres afin de se cacher des regards curieux.",
           keywords: ["forêt d'automne", "tapis de feuilles mortes", "troncs des grands arbres"]
         },
         {
           id: "p3",
-          section: "Alimentation",
+          section: "Partie 3 : L'Alimentation",
           accentColor: "border-slime-500 bg-slime-500/10 text-slime-400",
           text: "Pour faire le plein d'énergie, l'Écorceux se nourrit des doux rayons de soleil qui traversent les feuillages. Chaque matin, il boit les petites gouttes de rosée accrochées aux plantes. Pour le dessert, il grignote de délicieux glands de chêne et des noisettes sauvages.",
           keywords: ["rayons de soleil", "gouttes de rosée", "glands de chêne"]
@@ -260,10 +262,40 @@
       ]
     };
 
+    const criteriaTableData = [
+      {
+        section: "Paragraphe 1",
+        content: "Nom du monstre, description physique détaillée et traits de caractère."
+      },
+      {
+        section: "Paragraphe 2",
+        content: "Lieu de vie, abri précis et adaptation à l'environnement d'automne."
+      },
+      {
+        section: "Paragraphe 3",
+        content: "Régime alimentaire, plats magiques ou sauvages et méthode de récolte."
+      }
+    ];
+
+    const verificationToolsData = [
+      {
+        tool: "Accords dans le Groupe du Nom (GN)",
+        target: "Vérifier le genre et le nombre dans tous les GN (Déterminant + Nom + Adjectif)."
+      },
+      {
+        tool: "Dictionnaire Usito / Orthographe",
+        target: "Vérifier l'orthographe d'usage des mots complexes ou peu fréquents."
+      },
+      {
+        tool: "Ponctuation et majuscules",
+        target: "Vérifier la présence des majuscules, des points et la variété des organisateurs."
+      }
+    ];
+
     const lexiconCategories = [
       {
         id: "p1",
-        title: "👁️ Partie 1 : Physique et Caractère",
+        title: "👁️ Partie 1 : Description physique et traits de caractère",
         sections: [
           {
             subtitle: "Apparence physique",
@@ -338,11 +370,11 @@
       const [chosenIdeas, setChosenIdeas] = useState({});
       const [modelisationComplete, setModelisationComplete] = useState(false);
 
-      // Onglet 3 State
+      // Onglet 3 Practice State
       const [accordPractice, setAccordPractice] = useState({ q1: '', q2: '', q3: '' });
       const [accordFeedback, setAccordFeedback] = useState(null);
 
-      // Onglet 4 State
+      // Onglet 4 Lexicon State
       const [wordBasket, setWordBasket] = useState([]);
       const [searchQuery, setSearchQuery] = useState('');
       const [copied, setCopied] = useState(false);
@@ -351,13 +383,9 @@
         if (wordBasket.length === 0) return;
         const textToCopy = wordBasket.join(', ');
         
-        // Configuration de l'événement Clipboard pour forcer la couleur noire explicite
         const handleCopyEvent = (e) => {
           e.preventDefault();
-          // Version texte brut (standard, s'adapte à la couleur du texte du document receveur)
           e.clipboardData.setData('text/plain', textToCopy);
-          
-          // Version HTML riche avec styles inline stricts (force le texte noir #000000 sans fond)
           const htmlFormatted = `<span style="color: #000000 !important; background-color: #ffffff !important; font-family: Arial, sans-serif; font-size: 12pt;">${textToCopy}</span>`;
           e.clipboardData.setData('text/html', htmlFormatted);
         };
@@ -365,7 +393,6 @@
         document.addEventListener('copy', handleCopyEvent);
 
         try {
-          // Exécution de la commande de copie
           document.execCommand('copy');
           setCopied(true);
           setTimeout(() => setCopied(false), 2500);
@@ -411,10 +438,12 @@
       };
 
       const checkAccords = () => {
-        if (accordPractice.q1 === 'vertes' && accordPractice.q2 === 'pointues' && accordPractice.q3 === 'mystérieuse') {
+        if (accordPractice.q1.toLowerCase().trim() === 'vertes' && 
+            accordPractice.q2.toLowerCase().trim() === 'pointues' && 
+            accordPractice.q3.toLowerCase().trim() === 'mystérieuse') {
           setAccordFeedback({ type: 'success', text: '🎉 Bravo ! Tous tes accords dans le groupe du nom sont parfaits !' });
         } else {
-          setAccordFeedback({ type: 'error', text: '🔴 Attention aux accords ! L\'adjectif doit s\'accorder en genre (m/f) et en nombre (s/p) avec le nom.' });
+          setAccordFeedback({ type: 'error', text: '🔴 Attention aux accords ! L\'adjectif doit s\'accorder en genre (féminin/masculin) et en nombre (singulier/pluriel) avec le nom chef. (Ex: vertes, pointues, mystérieuse)' });
         }
       };
 
@@ -516,16 +545,347 @@
               </div>
             )}
 
-            {/* ========================================================= */}
-            {/* ONGLET 4 : BOÎTE À MOTS ÉPURÉE ET AÉRÉE                   */}
-            {/* ========================================================= */}
+            {}
+            {activeTab === 0 && (
+              <section className="space-y-8">
+                <div className="bg-spooky-900 border border-spooky-800 rounded-3xl p-8 shadow-xl space-y-6">
+                  
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-spooky-800 pb-4">
+                    <div>
+                      <h2 className="text-3xl font-display font-bold text-pumpkin-400">
+                        🧙 Modélisation guidée pas-à-pas
+                      </h2>
+                      <p className="text-slate-300 text-base mt-1">
+                        Choisis l'idée la plus riche et précise pour chaque partie du texte.
+                      </p>
+                    </div>
+                    <span className="self-start sm:self-center px-4 py-2 bg-spooky-800 border border-spooky-700 rounded-xl text-sm font-bold text-spooky-200">
+                      Étape {stepIdx + 1} sur {modelisationSteps.length}
+                    </span>
+                  </div>
+
+                  {!modelisationComplete ? (
+                    <div className="space-y-6">
+                      
+                      <div className="bg-spooky-800/80 rounded-2xl p-6 border border-spooky-700 space-y-2">
+                        <h3 className="text-xl font-display font-bold text-pumpkin-300">
+                          {modelisationSteps[stepIdx].title}
+                        </h3>
+                        <p className="text-slate-200 text-lg">
+                          {modelisationSteps[stepIdx].instruction}
+                        </p>
+                      </div>
+
+                      {/* CHOIX DES IDÉES */}
+                      <div className="space-y-4">
+                        {modelisationSteps[stepIdx].options.map((opt) => {
+                          const isSelected = selectedOption === opt.id;
+                          return (
+                            <button
+                              key={opt.id}
+                              onClick={() => handleSelectOption(opt)}
+                              className={`w-full text-left p-6 rounded-2xl border-2 transition-all duration-200 font-medium text-base leading-relaxed ${
+                                isSelected
+                                  ? opt.isBest
+                                    ? 'bg-emerald-950/60 border-emerald-500 text-white shadow-lg shadow-emerald-900/30'
+                                    : 'bg-rose-950/60 border-rose-500 text-white'
+                                  : 'bg-spooky-800/40 border-spooky-700 hover:bg-spooky-800 hover:border-pumpkin-500 text-slate-200'
+                              }`}
+                            >
+                              <div className="flex items-start space-x-3">
+                                <span className="font-bold text-lg text-pumpkin-400">{opt.id.toUpperCase()}.</span>
+                                <span className="flex-1">{opt.text}</span>
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      {/* FEEDBACK RETROACTION */}
+                      {stepFeedback && (
+                        <div className={`p-6 rounded-2xl font-bold text-lg border ${
+                          selectedOption && modelisationSteps[stepIdx].options.find(o => o.id === selectedOption)?.isBest
+                            ? 'bg-emerald-900/40 border-emerald-500/60 text-emerald-300'
+                            : 'bg-amber-900/40 border-amber-500/60 text-amber-200'
+                        }`}>
+                          {stepFeedback}
+                        </div>
+                      )}
+
+                      {/* BOUTON SUIVANT */}
+                      <div className="pt-4 flex justify-end">
+                        <button
+                          disabled={!selectedOption || !modelisationSteps[stepIdx].options.find(o => o.id === selectedOption)?.isBest}
+                          onClick={handleNextStep}
+                          className={`px-8 py-4 rounded-2xl font-display font-bold text-lg shadow-xl transition-all duration-200 ${
+                            selectedOption && modelisationSteps[stepIdx].options.find(o => o.id === selectedOption)?.isBest
+                              ? 'bg-pumpkin-500 hover:bg-pumpkin-600 text-white transform hover:-translate-y-0.5'
+                              : 'bg-spooky-800 text-slate-500 cursor-not-allowed border border-spooky-700'
+                          }`}
+                        >
+                          {stepIdx < modelisationSteps.length - 1 ? 'Partie suivante ➔' : 'Terminer la plan de texte 🏆'}
+                        </button>
+                      </div>
+
+                    </div>
+                  ) : (
+                    /* RÉSULTAT FINAL REGROUPÉ */
+                    <div className="space-y-6 pt-2">
+                      <div className="p-6 bg-emerald-950/50 border border-emerald-500/50 rounded-2xl text-center space-y-2">
+                        <span className="text-4xl">🎉</span>
+                        <h3 className="text-2xl font-display font-bold text-emerald-300">
+                          Plan de texte complété avec succès !
+                        </h3>
+                        <p className="text-slate-300">
+                          Voici le plan complet rassemblant les meilleures idées sélectionnées pour notre monstre.
+                        </p>
+                      </div>
+
+                      <div className="space-y-4">
+                        {Object.entries(chosenIdeas).map(([stepId, text], idx) => (
+                          <div key={stepId} className="p-6 bg-spooky-800/80 border border-pumpkin-500/30 rounded-2xl space-y-2">
+                            <span className="text-sm font-bold text-pumpkin-400 font-display uppercase tracking-wider">
+                              Paragraphe {idx + 1}
+                            </span>
+                            <p className="text-base text-slate-200 leading-relaxed font-medium">
+                              {text}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="pt-4 flex justify-center">
+                        <button
+                          onClick={resetModelisation}
+                          className="px-8 py-3.5 bg-spooky-800 hover:bg-spooky-700 border border-spooky-600 text-white font-display font-bold text-base rounded-2xl transition-colors"
+                        >
+                          🔄 Recommencer l'activité de modélisation
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                </div>
+              </section>
+            )}
+
+            {}
+            {activeTab === 1 && (
+              <section className="space-y-8">
+                <div className="bg-spooky-900 border border-spooky-800 rounded-3xl p-8 shadow-xl space-y-6">
+                  
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-spooky-800 pb-4">
+                    <div>
+                      <h2 className="text-3xl font-display font-bold text-pumpkin-400">
+                        📖 Exemple de texte modèle (Cote A)
+                      </h2>
+                      <p className="text-slate-300 text-base mt-1">
+                        Voici le texte descriptif idéal de 4e année. Lis attentivement ses 3 paragraphes.
+                      </p>
+                    </div>
+                    <span className="px-4 py-2 bg-pumpkin-500/20 border border-pumpkin-500/40 text-pumpkin-300 rounded-xl font-display font-bold text-sm self-start sm:self-center">
+                      ~{modelTextData.wordCount} mots
+                    </span>
+                  </div>
+
+                  {/* TITRE DU TEXTE */}
+                  <div className="text-center py-4 bg-spooky-800/50 rounded-2xl border border-spooky-700/60">
+                    <h3 className="text-3xl font-display font-bold text-amber-300">
+                      {modelTextData.title}
+                    </h3>
+                  </div>
+
+                  {/* PARAGRAPHES DU TEXTE */}
+                  <div className="space-y-6">
+                    {modelTextData.paragraphs.map((p, idx) => (
+                      <div key={p.id} className="p-6 bg-spooky-800/40 border border-spooky-700/80 rounded-2xl space-y-4 hover:border-spooky-600 transition-colors">
+                        <div className="flex items-center justify-between">
+                          <span className={`px-4 py-1.5 rounded-full text-xs font-bold font-display uppercase tracking-wider border ${p.accentColor}`}>
+                            {p.section}
+                          </span>
+                          <span className="text-xs text-slate-400 font-semibold">Paragraphe {idx + 1}</span>
+                        </div>
+
+                        <p className="text-lg text-slate-100 leading-loose font-medium">
+                          {p.text}
+                        </p>
+
+                        <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-spooky-800">
+                          <span className="text-xs text-slate-400 font-bold">Mots clés riches :</span>
+                          {p.keywords.map((kw, kwIdx) => (
+                            <span key={kwIdx} className="px-3 py-1 bg-spooky-800 border border-spooky-700 text-pumpkin-300 font-semibold text-xs rounded-lg">
+                              {kw}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                </div>
+              </section>
+            )}
+
+            {}
+            {activeTab === 2 && (
+              <section className="space-y-8">
+                
+                {/* TABLEAU 1 : CRITÈRES DE RÉUSSITE */}
+                <div className="bg-spooky-900 border border-spooky-800 rounded-3xl p-8 shadow-xl space-y-6">
+                  <div className="border-b border-spooky-800 pb-4">
+                    <h2 className="text-3xl font-display font-bold text-pumpkin-400">
+                      📋 Critères de réussite du texte
+                    </h2>
+                    <p className="text-slate-300 text-base mt-1">
+                      Ce que l'élève doit obligatoirement inclure dans chaque section de son texte descriptif.
+                    </p>
+                  </div>
+
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="border-b border-spooky-700 bg-spooky-800/80 text-pumpkin-300 font-display text-base">
+                          <th className="p-4 rounded-tl-2xl">Section du texte</th>
+                          <th className="p-4 rounded-tr-2xl">Ce qu'on doit y retrouver</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-spooky-800 font-medium text-base text-slate-200">
+                        {criteriaTableData.map((row, idx) => (
+                          <tr key={idx} className="hover:bg-spooky-800/40 transition-colors">
+                            <td className="p-4 font-bold text-pumpkin-400 font-display w-1/3">
+                              {row.section}
+                            </td>
+                            <td className="p-4 leading-relaxed">
+                              {row.content}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* TABLEAU 2 : OUTILS DE VÉRIFICATION TRANSVERSAUX */}
+                <div className="bg-spooky-900 border border-spooky-800 rounded-3xl p-8 shadow-xl space-y-6">
+                  <div className="border-b border-spooky-800 pb-4">
+                    <h2 className="text-3xl font-display font-bold text-purple-400">
+                      🛠️ Outils de vérification (Pour tout le texte)
+                    </h2>
+                    <p className="text-slate-300 text-base mt-1">
+                      Ces stratégies de révision et de correction s'appliquent à l'ensemble du texte sans exception.
+                    </p>
+                  </div>
+
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="border-b border-spooky-700 bg-spooky-800/80 text-purple-300 font-display text-base">
+                          <th className="p-4 rounded-tl-2xl">Outil de vérification</th>
+                          <th className="p-4 rounded-tr-2xl">Objectif de révision dans le texte</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-spooky-800 font-medium text-base text-slate-200">
+                        {verificationToolsData.map((row, idx) => (
+                          <tr key={idx} className="hover:bg-spooky-800/40 transition-colors">
+                            <td className="p-4 font-bold text-purple-300 font-display w-1/3">
+                              {row.tool}
+                            </td>
+                            <td className="p-4 leading-relaxed">
+                              {row.target}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* SIMULATEUR PRATIQUE D'ACCORD */}
+                <div className="bg-spooky-900 border border-pumpkin-500/40 rounded-3xl p-8 shadow-xl space-y-6">
+                  <div className="space-y-2 border-b border-spooky-800 pb-4">
+                    <span className="inline-block px-3.5 py-1 bg-pumpkin-500/20 text-pumpkin-400 font-display font-bold text-xs rounded-full">
+                      ✏️ Pratique guidée d'accord
+                    </span>
+                    <h3 className="text-2xl font-display font-bold text-white">
+                      Exercice : Accorder les adjectifs dans le Groupe du Nom (GN)
+                    </h3>
+                    <p className="text-slate-300 text-base">
+                      Écris la bonne forme de l'adjectif entre parenthèses pour qu'il s'accorde avec le nom chef.
+                    </p>
+                  </div>
+
+                  <div className="space-y-6 text-lg text-slate-100 leading-relaxed">
+                    
+                    <div className="p-5 bg-spooky-800/60 rounded-2xl border border-spooky-700 flex flex-col md:flex-row md:items-center gap-3">
+                      <span>1. Sa peau est couverte de mousses (vert)</span>
+                      <input
+                        type="text"
+                        placeholder="vertes"
+                        value={accordPractice.q1}
+                        onChange={(e) => setAccordPractice({ ...accordPractice, q1: e.target.value })}
+                        className="px-4 py-2 bg-spooky-900 border border-spooky-600 rounded-xl text-white font-bold w-36 focus:outline-none focus:border-pumpkin-500"
+                      />
+                      <span>.</span>
+                    </div>
+
+                    <div className="p-5 bg-spooky-800/60 rounded-2xl border border-spooky-700 flex flex-col md:flex-row md:items-center gap-3">
+                      <span>2. Il possède de longues cornes (pointu)</span>
+                      <input
+                        type="text"
+                        placeholder="pointues"
+                        value={accordPractice.q2}
+                        onChange={(e) => setAccordPractice({ ...accordPractice, q2: e.target.value })}
+                        className="px-4 py-2 bg-spooky-900 border border-spooky-600 rounded-xl text-white font-bold w-36 focus:outline-none focus:border-pumpkin-500"
+                      />
+                      <span>.</span>
+                    </div>
+
+                    <div className="p-5 bg-spooky-800/60 rounded-2xl border border-spooky-700 flex flex-col md:flex-row md:items-center gap-3">
+                      <span>3. Il habite dans une forêt (mystérieux)</span>
+                      <input
+                        type="text"
+                        placeholder="mystérieuse"
+                        value={accordPractice.q3}
+                        onChange={(e) => setAccordPractice({ ...accordPractice, q3: e.target.value })}
+                        className="px-4 py-2 bg-spooky-900 border border-spooky-600 rounded-xl text-white font-bold w-36 focus:outline-none focus:border-pumpkin-500"
+                      />
+                      <span>.</span>
+                    </div>
+
+                  </div>
+
+                  {accordFeedback && (
+                    <div className={`p-5 rounded-2xl font-bold text-base border ${
+                      accordFeedback.type === 'success'
+                        ? 'bg-emerald-950/80 border-emerald-500/60 text-emerald-300'
+                        : 'bg-rose-950/80 border-rose-500/60 text-rose-300'
+                    }`}>
+                      {accordFeedback.text}
+                    </div>
+                  )}
+
+                  <div className="pt-2">
+                    <button
+                      onClick={checkAccords}
+                      className="px-8 py-3.5 bg-pumpkin-500 hover:bg-pumpkin-600 text-white font-display font-bold text-base rounded-2xl shadow-lg transition-colors"
+                    >
+                      Vérifier mes accords
+                    </button>
+                  </div>
+
+                </div>
+
+              </section>
+            )}
+
+            {}
             {activeTab === 3 && (
               <section className="space-y-8">
                 
                 {/* En-tête de la boîte à mots avec cases pâles et texte noir */}
                 <div className="bg-slate-100 border border-slate-300 rounded-3xl p-8 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
                   <div>
-                    <h2 className="text-3xl font-display font-bold text-pumpkin-700">
+                    <h2 className="text-3xl font-display font-bold text-pumpkin-800">
                       🎃 Lexique pour la création d'un monstre
                     </h2>
                     <p className="text-slate-700 text-base mt-1 font-medium">
@@ -649,7 +1009,7 @@
 
           </main>
 
-          {/* FOOTER SIMPLE ET DISCRET */}
+          {}
           <footer className="mt-auto py-8 text-center text-sm text-spooky-200 border-t border-spooky-800/50">
             <p>Mon monstre d'Halloween • PFEQ 4e année • Enseignement du texte descriptif</p>
           </footer>
